@@ -3,71 +3,71 @@ const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class Todo extends Model {
-    // Adds a new task
+    // Add a new task
     static async addTask(params) {
       return await Todo.create(params);
     }
 
-    // Shows the full todo list grouped by Overdue, Due Today, and Due Later
+    // Show the todo list with grouping: Overdue, Due Today, and Due Later
     static async showList() {
       console.log("My Todo-list\n");
 
-      // Overdue items
+      // Show overdue items
       console.log("Overdue");
       const overdueItems = await Todo.overdue();
       overdueItems.forEach(item => console.log(item.displayableString()));
       console.log("\n");
 
-      // Due today items
+      // Show today's items
       console.log("Due Today");
       const todayItems = await Todo.dueToday();
       todayItems.forEach(item => console.log(item.displayableString()));
       console.log("\n");
 
-      // Due later items
+      // Show due later items
       console.log("Due Later");
       const laterItems = await Todo.dueLater();
       laterItems.forEach(item => console.log(item.displayableString()));
     }
 
-    // Returns tasks that are overdue (dueDate < today), including completed ones
+    // Return tasks that are overdue
     static async overdue() {
-      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD format
       return await Todo.findAll({
         where: {
           dueDate: {
-            [sequelize.Op.lt]: today
-          }
+            [sequelize.Op.lt]: today,
+          },
         },
-        order: [['dueDate', 'ASC']]
+        order: [['dueDate', 'ASC']],
       });
     }
 
-    // Returns tasks that are due today, including completed ones
+    // Return tasks due today
     static async dueToday() {
-      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD format
       return await Todo.findAll({
         where: {
-          dueDate: today
+          dueDate: today,
         },
-        order: [['dueDate', 'ASC']]
+        order: [['dueDate', 'ASC']],
       });
     }
 
-    // Returns tasks that are due later (dueDate > today), including completed ones
+    // Return tasks that are due later
     static async dueLater() {
-      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD format
       return await Todo.findAll({
         where: {
           dueDate: {
-            [sequelize.Op.gt]: today
-          }
+            [sequelize.Op.gt]: today,
+          },
         },
-        order: [['dueDate', 'ASC']]
+        order: [['dueDate', 'ASC']],
       });
     }
 
-    // Marks a task as complete by ID
+    // Mark a task as complete
     static async markAsComplete(id) {
       const todo = await Todo.findByPk(id);
       if (todo) {
@@ -76,22 +76,22 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
 
-    // Formats the todo item as a string for display
+    // Format task display based on completion status and due date
     displayableString() {
       const checkbox = this.completed ? "[x]" : "[ ]";
-      const today = new Date().toISOString().slice(0, 10);
+      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD format
 
-      // For todos due today, no need to show the date
+      // If due today, omit the date
       if (this.dueDate === today) {
         return `${this.id}. ${checkbox} ${this.title}`;
       }
 
-      // For todos due on other dates, show the date
+      // Otherwise, include the due date
       return `${this.id}. ${checkbox} ${this.title} ${this.dueDate}`;
     }
   }
 
-  // Model initialization
+  // Define the Todo model
   Todo.init({
     title: DataTypes.STRING,
     dueDate: DataTypes.DATEONLY,

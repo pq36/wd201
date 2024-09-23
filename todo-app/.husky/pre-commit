@@ -1,0 +1,2 @@
+cd todo-cli && npm test
+npx lint-staged

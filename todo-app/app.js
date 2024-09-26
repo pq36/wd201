@@ -3,12 +3,21 @@ const express = require('express');
 const app = express();
 const { Todo } = require("./models");
 const bodyParser = require('body-parser');
+const path=require('path');
 
 app.use(bodyParser.json()); // Middleware for parsing JSON bodies
+app.set("view engine","ejs");
+app.use(express.static(path.join(__dirname,"public")));
 
 // Simple endpoint to test the API
-app.post("/", (request, response) => {
-  response.send("hello world");
+app.get("/", async(request, response) => {
+  const allTodos=await Todo.getTodos();
+  if(request.accepts('html')){
+    response.render("index",{allTodos});
+  }
+  else{
+    response.json({allTodos})
+  }
 });
 
 // Get all To-Dos

@@ -2,3 +2,6 @@ body{
     background-color: azure;
     color: black;
 }
+.Todo-Item:hover .trash-icon{
+    display: block;
+}

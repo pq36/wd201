@@ -1,7 +1,10 @@
 <!-- Overdue Todos -->
 <div>
-    <h5 class="text-red-600">Overdue <span id="count-overdue" class="bg-gray-100 py-1 px-3"><%= allTodos.filter(todo=> new Date(todo.dueDate) < new
-                Date().setHours(0, 0, 0, 0)).length %></stan></h5>
+    <div class="flex">
+    <h5 class="text-red-600">Overdue</h5>
+    <div id="count-overdue" class="bg-gray-100 py-1 px-3"><%= allTodos.filter(todo=> new Date(todo.dueDate) < new
+        Date().setHours(0, 0, 0, 0)).length %></div>
+    </div>
     <ul class="list-none">
         <% allTodos.forEach(function(todo) { if (new Date(todo.dueDate) < new Date().setHours(0, 0, 0,
             0)) { %>
@@ -28,8 +31,11 @@
 </div>
  <!-- Due Today Todos -->
  <div>
-    <h5 class="text-green-600">Due Today <span id="count-due-today" class="bg-gray-100 py-1 px-3"><%= allTodos.filter(todo=> todo.dueDate === new
-            Date().toISOString().slice(0, 10)).length %></span></h5>
+    <div class="flex">
+    <h5 class="text-green-600">Due Today</h5>
+    <div id="count-due-today" class="bg-gray-100 py-1 px-3"><%= allTodos.filter(todo=> todo.dueDate === new
+        Date().toISOString().slice(0, 10)).length %></div>
+    </div>
     <ul class="list-none">
         <% allTodos.forEach(function(todo) { if (todo.dueDate===new Date().toISOString().slice(0, 10)) {
             %>
@@ -56,8 +62,11 @@
 </div>
 <!-- Due Later Todos -->
 <div>
-    <h5 class="text-yellow-600">Due Later <span id="count-due-later" class="bg-gray-100 py-1 px-3"><%= allTodos.filter(todo=> new Date(todo.dueDate) > new
-            Date()).length %></span></h5>
+    <div class="flex">
+    <h5 class="text-yellow-600">Due Later</h5>
+    <div id="count-due-later" class="bg-gray-100 py-1 px-3"><%= allTodos.filter(todo=> new Date(todo.dueDate) > new
+        Date()).length %></div>
+        </div>
     <ul class="list-none">
         <% allTodos.forEach(function(todo) { if (new Date(todo.dueDate)> new Date()) { %>
             <li class="group">

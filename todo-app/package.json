@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:prod":"node index.js",
-    "start":"nodemon -e js,ejs",
+    "start:prod": "node index.js",
+    "start": "nodemon -e js,ejs",
     "pretest": "cross-env NODE_ENV=test npx sequelize-cli db:drop && cross-env NODE_ENV=test npx sequelize-cli db:create",
     "test": "cross-env NODE_ENV=test jest --detectOpenHandles",
     "prepare": "husky install"
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
+    "husky": "^9.1.6",
     "jest": "^29.7.0",
     "nodemon": "^3.1.7",
     "sequelize-cli": "^6.6.2",

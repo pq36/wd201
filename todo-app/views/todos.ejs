@@ -9,7 +9,7 @@
         <% allTodos.forEach(function(todo) { if (new Date(todo.dueDate) < new Date().setHours(0, 0, 0,
             0)) { %>
             <li class="group">
-                <div class="flex w-fit my-2 px-2 py-1 items-center">
+                <div class="flex w-fit my-2 px-2 py-1 items-center Todo-Item">
                     <input id="todo-checkbox-<%= todo.id %>" type="checkbox" <%=todo.completed?"checked":""%> onclick="updateTodo(<%= todo.id%>)"
                         class="w-4 h-4 text-blue-600 bg-gray-100 rounded border">
                     <label for="todo-checkbox-<%= todo.id %>"
@@ -40,7 +40,7 @@
         <% allTodos.forEach(function(todo) { if (todo.dueDate===new Date().toISOString().slice(0, 10)) {
             %>
             <li class="group">
-                <div class="flex w-fit my-2 px-2 py-1 items-center">
+                <div class="flex w-fit my-2 px-2 py-1 items-center Todo-Item">
                     <input id="todo-checkbox-<%= todo.id %>" type="checkbox" <%=todo.completed?"checked":""%> onclick="updateTodo(<%= todo.id%>)"
                         class="w-4 h-4 text-blue-600 bg-gray-100 rounded border">
                     <label for="todo-checkbox-<%= todo.id %>"
@@ -70,7 +70,7 @@
     <ul class="list-none">
         <% allTodos.forEach(function(todo) { if (new Date(todo.dueDate)> new Date()) { %>
             <li class="group">
-                <div class="flex w-fit my-2 px-2 py-1 items-center">
+                <div class="flex w-fit my-2 px-2 py-1 items-center Todo-Item">
                     <input id="todo-checkbox-<%= todo.id %>" type="checkbox" <%=todo.completed?"checked":""%> onclick="updateTodo(<%= todo.id%>)"
                         class="w-4 h-4 text-blue-600 bg-gray-100 rounded border">
                     <label for="todo-checkbox-<%= todo.id %>"

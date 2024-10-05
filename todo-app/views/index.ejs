@@ -7,6 +7,39 @@
     <title>Todo List</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="./css/styles.css" rel="stylesheet">
+    <script>
+        // Update a to-do's completion status (complete/incomplete)
+        function updateTodo(id) {
+            const checkbox = document.getElementById(`todo-checkbox-${id}`);
+            const completed = checkbox.checked; // Check the state of the checkbox
+
+            fetch(`/todos/${id}`, {
+                method: "put",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ completed })  // Send the completed status
+            })
+            .then((res) => {
+                if (res.ok) {
+                    window.location.reload();  // Reload page on success
+                }
+            })
+            .catch((err) => console.error(err));
+        }
+
+        // Delete a to-do
+        function deleteTodo(id) {
+            fetch(`/todos/${id}`, {
+                method: "delete",
+                headers: { "Content-Type": "application/json" }
+            })
+            .then((res) => {
+                if (res.ok) {
+                    window.location.reload();
+                }
+            })
+            .catch((err) => console.error(err));
+        }
+    </script>
 </head>
 
 <body>
@@ -14,24 +47,32 @@
         <div class="col-start-3 col-span-2">
             <%- include('header.ejs') %>
 
-                <form action="/add-todo" method="POST">
-                    <div class="flex gap-2 py-4">
-                        <div class="flex-auto">
-                            <input type="text" name="title" placeholder="What's next?"
-                                class="border border-gray-300 text-gray-900 w-full rounded p-2 text-sm" required>
-                        </div>
-                        <div class="flex-auto">
-                            <input type="date" name="dueDate"
-                                class="border border-gray-300 text-gray-900 w-full rounded p-2 text-sm leading-4">
-                        </div>
-                        <div class="flex-none">
-                            <button type="submit"
-                                class="bg-green-600 text-white px-5 py-1.5 rounded font-medium mr-2">Add</button>
-                        </div>
+            <!-- Form for adding a new to-do -->
+            <form action="/todos" method="POST">
+                <div class="flex gap-2 py-4">
+                    <div class="flex-auto">
+                        <input type="text" name="title" placeholder="What's next?"
+                            class="border border-gray-300 text-gray-900 w-full rounded p-2 text-sm" required>
                     </div>
-                </form>
-                <%- include('todos.ejs')%>
-                <%- include('footer.ejs')%>
+                    <div class="flex-auto">
+                        <input type="date" name="dueDate"
+                            class="border border-gray-300 text-gray-900 w-full rounded p-2 text-sm leading-4" required>
+                    </div>
+                    <div class="flex-none">
+                        <button type="submit"
+                            class="bg-green-600 text-white px-5 py-1.5 rounded font-medium mr-2">Add</button>
+                    </div>
+                </div>
+            </form>
+            <div class="flex py-4">
+                <h5 class="text-blue-600">Completed</h5>
+                <div id="count-completed" class="bg-gray-100 py-1 px-3 ml-2">
+                    <%= allTodos.filter(todo => todo.completed).length %>
+                </div>
+            </div>
+
+            <%- include('todos.ejs') %> <!-- Render todos here -->
+            <%- include('footer.ejs') %> <!-- Render footer here -->
         </div>
     </div>
 </body>

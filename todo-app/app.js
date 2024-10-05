@@ -3,20 +3,20 @@ const express = require('express');
 const app = express();
 const { Todo } = require("./models");
 const bodyParser = require('body-parser');
-const path=require('path');
+const path = require('path');
 
 app.use(bodyParser.json()); // Middleware for parsing JSON bodies
-app.set("view engine","ejs");
-app.use(express.static(path.join(__dirname,"public")));
+app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({ extended: false }));
 
 // Simple endpoint to test the API
-app.get("/", async(request, response) => {
-  const allTodos=await Todo.getTodos();
-  if(request.accepts('html')){
-    response.render("index",{allTodos});
-  }
-  else{
-    response.json({allTodos})
+app.get("/", async (request, response) => {
+  const allTodos = await Todo.getTodos();
+  if (request.accepts('html')) {
+    response.render("index", { allTodos });
+  } else {
+    response.json({ allTodos });
   }
 });
 
@@ -40,22 +40,24 @@ app.post('/todos', async (request, response) => {
       dueDate: request.body.dueDate,
       completed: false
     });
-    return response.json(todo);
+    return response.redirect('/');
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);
   }
 });
 
-// Mark a To-Do as completed
-app.put("/todos/:id/markAsCompleted", async (request, response) => {
-  console.log("we have to update a todo with ID:", request.params.id);
+// Update a To-Do's completion status
+app.put("/todos/:id", async (request, response) => {
+  console.log("Updating completion status of todo with ID:", request.params.id);
   try {
     const todo = await Todo.findByPk(request.params.id);
     if (!todo) {
       return response.status(404).json({ error: "Todo not found" });
     }
-    const updatedTodo = await todo.update({ completed: true });
+
+    // Update the 'completed' status based on the request body
+    const updatedTodo = await todo.update({ completed: request.body.completed });
     return response.json(updatedTodo);
   } catch (error) {
     console.log(error);
@@ -63,18 +65,19 @@ app.put("/todos/:id/markAsCompleted", async (request, response) => {
   }
 });
 
-// Delete a To-Do by ID
+// Delete a To-Do
 app.delete("/todos/:id", async (request, response) => {
   try {
-    const todo = await Todo.findByPk(request.params.id); // Find the todo by ID
-    if (!todo) {
-      return response.status(404).json(false); // Return false if the todo doesn't exist
+    const rowsDeleted = await Todo.destroy({
+      where: { id: request.params.id }
+    });
+    if (rowsDeleted === 0) {
+      return response.status(404).json({ error: "Todo not found" });
     }
-    await todo.destroy(); // Delete the todo
-    return response.json(true); // Return true if the deletion was successful
+    return response.json({ success: true });
   } catch (error) {
     console.log(error);
-    return response.status(500).json(false); // Return false in case of error
+    return response.status(422).json(error);
   }
 });
 

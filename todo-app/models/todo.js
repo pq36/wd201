@@ -1,25 +1,26 @@
 'use strict';
-const { Model } = require('sequelize');
+const { Model, DataTypes } = require('sequelize'); // Corrected to use DataTypes
 
 module.exports = (sequelize, DataTypes) => {
   class Todo extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      Todo.belongsTo(models.User, {
+        foreignKey: 'userId'
+      });
     }
 
-    // Fetch all todos
-    static getTodos() {
-      return this.findAll();
+    // Fetch all todos for a specific user
+    static getTodos(userId) {
+      return this.findAll({
+        where: {
+          userId: userId // Specify the condition for userId
+        }
+      });
     }
 
     // Add a new todo
-    static addTodo({ title, dueDate }) {
-      return this.create({ title: title, dueDate: dueDate, completed: false });
+    static addTodo({ title, dueDate, userId }) {
+      return this.create({ title: title, dueDate: dueDate, completed: false, userId });
     }
 
     // Set completion status (true for complete, false for incomplete)
@@ -37,9 +38,31 @@ module.exports = (sequelize, DataTypes) => {
 
   // Initialize the Todo model
   Todo.init({
-    title: DataTypes.STRING,
-    dueDate: DataTypes.DATEONLY,
-    completed: DataTypes.BOOLEAN
+    title: {
+      type: DataTypes.STRING, // Use DataTypes instead of Sequelize
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: "Title cannot be empty"
+        }
+      }
+    },
+    dueDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: "Due date cannot be empty"
+        },
+        isDate: {
+          msg: "Due date must be a valid date"
+        }
+      }
+    },
+    completed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     sequelize,
     modelName: 'Todo',

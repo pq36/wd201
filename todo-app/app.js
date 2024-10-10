@@ -68,9 +68,16 @@ passport.deserializeUser((id, done) => {
 });
 
 // Routes and logic
-app.get("/", async (req, res) => {
+app.get("/", (req, res) => {
+  if (req.isAuthenticated()) {
+    // If the user is logged in, redirect to /todos
+    return res.redirect("/todos");
+  }
+  
+  // If the user is not logged in, render the home page or login/signup page
   res.render("index", { title: "Todo application" });
 });
+
 
 // Simple endpoint to test the API
 app.get("/todos", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
@@ -153,27 +160,36 @@ app.get("/signup", (request, response) => {
 
 // User registration
 app.post("/users", async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
+  
+  if (!firstName || !email || !password) {
+    req.flash("error", "First name, email, and password are required.");
+    return res.redirect("/signup");
+  }
+
   try {
-    const hashedPwd = await bcrypt.hash(req.body.password, saltRounds);
+    const hashedPwd = await bcrypt.hash(password, saltRounds);
     const user = await User.create({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      password: hashedPwd
+      firstName,
+      lastName,
+      email,
+      password: hashedPwd,
     });
-    
+
     req.login(user, (err) => {
       if (err) {
-        console.log(err);
-        return res.status(500).send("Error logging in after signup");
+        req.flash("error", "Error logging in after signup");
+        return res.redirect("/signup");
       }
-      return res.redirect("/");
+      return res.redirect("/todos");
     });
   } catch (error) {
     console.error(error);
-    res.status(422).json(error);
+    req.flash("error", "Failed to create account. Please try again.");
+    res.redirect("/signup");
   }
 });
+
 
 // Login page
 app.get("/login", (req, res) => {
